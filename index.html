@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>API记账本</title>
+  
 <style>*{margin:0;padding:0;box-sizing:border-box}
 :root{--t:.25s}
 body,html{-webkit-tap-highlight-color:transparent}
@@ -145,6 +146,7 @@ textarea{resize:vertical;min-height:50px}
 }
 </style>
 </head>
+
 <body>
 <div class="hd">
 <div>
@@ -898,7 +900,9 @@ textarea{resize:vertical;min-height:50px}
 <button class="btn bd" onclick="cfY()">确认</button>
 </div>
 </div>
-</div><script>const $=t=>document.getElementById(t),ls=t=>{try{return JSON.parse(localStorage.getItem(t))||[]}catch{return[]}},sv=(t,e)=>localStorage.setItem(t,JSON.stringify(e)),gid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),td=()=>{const t=new Date;return`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`},fN=(t,e)=>{if(null==t||isNaN(t))return"0";const n=parseFloat(t),l=null!=e?Math.min(e,3):Math.abs(n)<1?3:2;return Number.isInteger(n)&&0!==l?n.toString():parseFloat(n.toFixed(l)).toString()},qv=t=>{const e=parseFloat($(t).value);return isNaN(e)?null:e},qf=(t,e)=>{if(null==t||isNaN(t)||!isFinite(t))return"—";const n=+t;if(Number.isInteger(n))return String(n);const l=Math.abs(n)<1?3:2;return parseFloat(n.toFixed(l)).toString()},qtf=t=>{if(null==t||isNaN(t)||!isFinite(t))return"—";const e=+t;return Math.abs(e)>=1e6?fN(e/1e6,2)+"M":Math.abs(e)>=1e3?fN(e/1e3,2)+"k":fN(e,0)};
+</div>
+  
+<script>const $=t=>document.getElementById(t),ls=t=>{try{return JSON.parse(localStorage.getItem(t))||[]}catch{return[]}},sv=(t,e)=>localStorage.setItem(t,JSON.stringify(e)),gid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),td=()=>{const t=new Date;return`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`},fN=(t,e)=>{if(null==t||isNaN(t))return"0";const n=parseFloat(t),l=null!=e?Math.min(e,3):Math.abs(n)<1?3:2;return Number.isInteger(n)&&0!==l?n.toString():parseFloat(n.toFixed(l)).toString()},qv=t=>{const e=parseFloat($(t).value);return isNaN(e)?null:e},qf=(t,e)=>{if(null==t||isNaN(t)||!isFinite(t))return"—";const n=+t;if(Number.isInteger(n))return String(n);const l=Math.abs(n)<1?3:2;return parseFloat(n.toFixed(l)).toString()},qtf=t=>{if(null==t||isNaN(t)||!isFinite(t))return"—";const e=+t;return Math.abs(e)>=1e6?fN(e/1e6,2)+"M":Math.abs(e)>=1e3?fN(e/1e3,2)+"k":fN(e,0)};
 function qTokenStat(){const t=qv("qtm"),e=qv("qtio"),n=qv("qtip"),l=qv("qtop"),a=qR(),o=qM(),s=qv("qad"),i=(qv("qac"),$("qtsr"));let c=e;if(c>0||(c=7),!(t>0&&n>=0&&l>=0&&a>0))return void(i.style.display="none");const r=t*a,u=((n||0)*c+(l||0))/1e6*o;if(!(u>0))return void(i.style.display="none");const d=r/u,v=d*c,p=v+d;i.style.display="block",$("qtmq").textContent=qf(r),$("qtin").textContent=qtf(v),$("qtout").textContent=qtf(d),$("qttok").textContent=qtf(p),$("qtdtr").style.display=s>0?"flex":"none",s>0&&($("qtdt").textContent=qtf(p/s))}let S=ls("s"),R=ls("r"),P=ls("p"),CK=ls("ck"),F=ls("f"),IV=ls("iv"),CM=ls("cm"),GL=(()=>{try{return JSON.parse(localStorage.getItem("gl"))||{}}catch{return{}}})(); CM=CM.flatMap(t=>t.channel&&t.model?[{id:t.id+"c",channel:t.channel,model:""},{id:t.id+"m",channel:"",model:t.model}]:[t]);const sa=()=>{sv("s",S),sv("r",R),sv("p",P),sv("ck",CK),sv("f",F),sv("iv",IV),sv("cm",CM),sv("gl",GL)};
 function togGL(t,e){e&&(e.stopPropagation(),e.preventDefault()),GL[t]=!GL[t],sa(),rOv()}
 function gTBUnlocked(){return S.reduce((t,e)=>{const n=e.group||"other";return GL[n]?t:t+bToY(e)},0)}
