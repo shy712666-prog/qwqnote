@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>API记账本</title>
+</head>
+<body>
+<div class="hd">
+<div>
+<h1>💰 记账本</h1>
+<div class="sub" id="hsub">
+</div>
+</div>
+<button class="tt" onclick="togTh()">
+</button>
+</div>
+<div class="pg on" id="pg0">
+</div>
+<div class="pg" id="pg1">
+</div>
+<div class="pg" id="pg2">
+<div class="cd">
+<div class="row" style="margin-bottom:12px">
+<div class="fg" style="margin:0">
+<label class="fl">站点代入</label>
+<select id="qsite" onchange="qSyncSite()">
+</select>
+</div>
+<div class="fg" style="display:flex;align-items:flex-end;margin:0">
+<button class="btn bg bb" onclick="qFillSite()">代入站点汇率</button>
+</div>
+</div>
+<div class="fg" style="margin-bottom:12px">
+<label class="fl">全局倍率</label>
+<input type="number" id="qmul" step="any" value="1" oninput="qDoAll()">
+</div>
+<div class="qtop">
+<div class="sg qtabs">
+<button class="btn bg bs on qtab" onclick="qSw(0)">计费</button>
+<button class="btn bg bs qtab" onclick="qSw(1)">汇率</button>
+<button class="btn bg bs qtab" onclick="qSw(2)">均值</button>
+</div>
+<div class="sg qunit">
+<button class="btn bg bs qub on" data-u="quota" onclick='qUSw("quota")'>额度</button>
+<button class="btn bg bs qub" data-u="yuan" onclick='qUSw("yuan")'>¥</button>
+</div>
+</div>
+<div class="qsec on">
+<div class="row" style="margin-bottom:12px">
+<div class="fg" style="margin:0">
+<select id="qprice" onchange="qFillPrice()">
+</select>
+</div>
+<div class="fg" style="display:flex;align-items:flex-end;margin:0">
+<button class="btn bg bb" onclick="qFillPrice()">🪄 代入价格</button>
+</div>
+</div>
+<div class="qh">🩵 按次</div>
+<div class="fg">
+<label class="fl">每次消耗额度</label>
+<input type="number" id="qpc" step="any" oninput="qPer()">
+</div>
+<div class="qrx" id="qpr" style="display:none">
+<div class="qrs">
+<span>每次使用额度</span>
+<span class="v" id="qpcm">—</span>
+</div>
+<div class="qrs">
+<span>每次费用(¥)</span>
+<span class="v" id="qpcy">—</span>
+</div>
+<div class="qrs">
+<span>每元可用次数</span>
+<span class="v o" id="qpcp">—</span>
+</div>
+<div class="qrs">
+<span>余额可用次数</span>
+<span class="v g" id="qpct">—</span>
+</div>
+</div>
+<div class="qh" style="margin-top:12px">
+<span>🩷 按量</span>
+<button class="qavgbtn" id="qavgBtn" onclick="qToggleAvg()">qwq</button>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">输入价(/M)</label>
+<input type="number" id="qip" step="any" oninput="qTok()">
+</div>
+<div class="fg">
+<label class="fl">输出价(/M)</label>
+<input type="number" id="qop" step="any" oninput="qTok()">
+</div>
+</div>
+<div class="row" style="margin-bottom:10px">
+<div class="fg" style="margin:0">
+<input type="number" id="qcf" step="any" value="0.3" oninput="qTok()" placeholder="缓存输入价倍率">
+</div>
+<div class="fg" style="margin:0">
+<button class="btn bg bb" id="qcacheBtn" onclick="qTogCache()">缓存：OFF</button>
+</div>
+</div>
+<details class="qfold">
+<summary>(ˆつ⩊⊂ˆ)੭</summary>
+<div class="qfb">
+<div class="row">
+<div class="fg">
+<label class="fl">提示词(k)</label>
+<input type="number" id="qcp" step="any" value="6" oninput="qTok()">
+</div>
+<div class="fg">
+<label class="fl">累计上下文(k)</label>
+<input type="number" id="qcap" step="any" value="30" oninput="qSetDriver('cap')">
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">每轮输出最少(k)</label>
+<input type="number" id="qomn" step="any" value="0.5" oninput="qTok()">
+</div>
+<div class="fg">
+<label class="fl">每轮输出最多(k)</label>
+<input type="number" id="qomx" step="any" value="1.5" oninput="qTok()">
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">预算金额(¥)</label>
+<input type="number" id="qbd" step="any" oninput="qSetDriver('budget')">
+</div>
+<div class="fg">
+<label class="fl">预期轮数</label>
+<input type="number" id="qrounds" step="any" min="1" oninput="qSetDriver('rounds')">
+</div>
+</div>
+</div>
+</details>
+
+<div class="qrx" id="qtr" style="display:none">
+<div class="qrs" id="qtcacheRow" style="display:none">
+<span>缓存后输入价</span>
+<span class="v" id="qtcache">—</span>
+</div>
+<div class="qrs">
+<span>首轮消耗</span>
+<span class="v" id="qtyc">—</span>
+</div>
+<div class="qrs">
+<span>末轮消耗</span>
+<span class="v" id="qtlast">—</span>
+</div>
+<div class="qrs">
+<span>平均每轮价格</span>
+<span class="v o" id="qtavg">—</span>
+</div>
+<div class="qrs">
+<span>累计费用(¥)</span>
+<span class="v g" id="qtall">—</span>
+</div>
+<div class="qrs" id="qctxr" style="display:none">
+<span>预期总上下文</span>
+<span class="v" id="qctx">—</span>
+</div>
+<div class="qrs" id="qroundpr" style="display:none">
+<span>预期累计价格</span>
+<span class="v g" id="qroundprv">—</span>
+</div>
+<div class="qrs">
+<span>预算可用轮数</span>
+<span class="v g" id="qtbm">—</span>
+</div>
+</div>
+</div>
+<div class="qsec">
+<div class="qh">💵 充值比</div>
+<div class="row">
+<div class="fg">
+<label class="fl">实付金额(¥)</label>
+<input type="number" id="qy" step="any" oninput='qBase("qy")'>
+</div>
+<div class="fg">
+<label class="fl">获得额度</label>
+<input type="number" id="qq" step="any" oninput='qBase("qq")'>
+</div>
+</div>
+<div class="fg">
+<label class="fl">实际汇率</label>
+<input type="number" id="qrate" step="any" placeholder="请输入" oninput='qBase("qrate")'>
+</div>
+<div class="qrx" id="qbr" style="display:none">
+<div class="qrs">
+<span>1元=额度</span>
+<span class="v" id="qrd">—</span>
+</div>
+<div class="qrs">
+<span>1额度=元</span>
+<span class="v g" id="qry">—</span>
+</div>
+<div class="qrs" id="qddw" style="display:none">
+<span>折扣率</span>
+<span class="v o" id="qdd">—</span>
+</div>
+<div class="qrs" id="qdbrw" style="display:none">
+<span>节省金额</span>
+<span class="v g" id="qdbr">—</span>
+</div>
+</div>
+<details class="qfold">
+<summary>折扣</summary>
+<div class="qfb">
+<div class="row">
+<div class="fg">
+<label class="fl">原价金额(¥)</label>
+<input type="number" id="qoy" step="any" oninput='qBase("qoy")'>
+</div>
+<div class="fg">
+<label class="fl">折扣率</label>
+<input type="number" id="qdisc" step="any" oninput='qBase("qdisc")'>
+</div>
+</div>
+</div>
+</details>
+<div class="qh" style="margin-top:12px">⏳ 汇率换算</div>
+<div class="row" style="margin-bottom:8px">
+<div class="fg" style="margin:0">
+<select id="calcd" onchange="updCalc()">
+<option value="to-q">¥ → 额度</option>
+<option value="to-y">额度 → ¥</option>
+</select>
+</div>
+<div class="fg" style="margin:0">
+<input type="number" id="calci" placeholder="输入数值" step="any" oninput="updCalc()">
+</div>
+</div>
+<div class="cr" id="calcr">—</div>
+</div>
+<div class="qsec">
+<div class="qh">💖 总额统计</div>
+<div class="row">
+<div class="fg">
+<label class="fl">当前剩余额度</label>
+<input type="number" id="qrm" step="any" oninput="qBal()">
+</div>
+<div class="fg">
+<label class="fl">已消耗额度</label>
+<input type="number" id="qus" step="any" oninput="qBal()">
+</div>
+</div>
+<div class="qrx" id="qblr" style="display:none">
+<div class="qrs" id="qtbqr" style="display:none">
+<span>初始总额度</span>
+<span class="v o" id="qtbq">—</span>
+</div>
+<div class="qrs">
+<span>剩余额度</span>
+<span class="v g" id="qrmy">—</span>
+</div>
+<div class="qrs" id="quyr" style="display:none">
+<span>已消耗额度</span>
+<span class="v" id="quy">—</span>
+</div>
+<div class="qrs" id="qprr" style="display:none">
+<span>余额占比</span>
+<span class="v g" id="qrpc">—</span>
+</div>
+</div>
+<div class="qh" style="margin-top:12px">✨ 平均用量</div>
+<div class="row">
+<div class="fg">
+<label class="fl">使用天数</label>
+<input type="number" id="qad" step="any" oninput="qAvg()">
+</div>
+<div class="fg">
+<label class="fl">总调用次数</label>
+<input type="number" id="qac" step="any" oninput="qAvg()">
+</div>
+</div>
+<div class="qrx" id="qavr" style="display:none">
+<div class="qrs">
+<span>日均消耗额度</span>
+<span class="v" id="qadq">—</span>
+</div>
+<div class="qrs" id="qadyr" style="display:none">
+<span>单次费用</span>
+<span class="v g" id="qady">—</span>
+</div>
+<div class="qrs" id="qacdr" style="display:none">
+<span>日均调用次数</span>
+<span class="v" id="qacd">—</span>
+</div>
+<div class="qrs" id="qardr" style="display:none">
+<span>剩余可用天数</span>
+<span class="v g" id="qard">—</span>
+</div>
+<div class="qrs" id="qartr" style="display:none">
+<span>预计用到</span>
+<span class="v" id="qart">—</span>
+</div>
+</div>
+<div class="qh" style="margin-top:12px">🎠 Token统计</div>
+<div class="row">
+<div class="fg">
+<label class="fl">已消耗金额(¥)</label>
+<input type="number" id="qtm" step="any" oninput="qTokenStat()">
+</div>
+<div class="fg">
+<label class="fl">输入/输出(量比)</label>
+<input type="number" id="qtio" step="any" value="7" oninput="qTokenStat()">
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">输入价格(/M)</label>
+<input type="number" id="qtip" step="any" oninput="qTokenStat()">
+</div>
+<div class="fg">
+<label class="fl">输出价格(/M)</label>
+<input type="number" id="qtop" step="any" oninput="qTokenStat()">
+</div>
+</div>
+<div class="qrx" id="qtsr" style="display:none">
+<div class="qrs">
+<span>单轮消耗额度</span>
+<span class="v" id="qtmq">—</span>
+</div>
+<div class="qrs">
+<span>输入量</span>
+<span class="v" id="qtin">—</span>
+</div>
+<div class="qrs">
+<span>输出量</span>
+<span class="v g" id="qtout">—</span>
+</div>
+<div class="qrs">
+<span>token总量</span>
+<span class="v o" id="qttok">—</span>
+</div>
+<div class="qrs" id="qtdtr" style="display:none">
+<span>日均用量</span>
+<span class="v" id="qtdt">—</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="pg" id="pg3">
+<div class="cd">
+<div class="sg" id="ptsg">
+</div>
+<div id="pr-c">
+</div>
+</div>
+</div>
+<div class="pg" id="pg4">
+</div>
+<div class="tabs">
+<button class="tb on" data-p="0">
+<span class="ic">📋</span>总览</button>
+<button class="tb" data-p="1">
+<span class="ic">💳</span>充值</button>
+<button class="tb" data-p="2">
+<span class="ic">⚖️</span>换算</button>
+<button class="tb" data-p="3">
+<span class="ic">🏷️</span>价格</button>
+<button class="tb" data-p="4">
+<span class="ic">⚙️</span>更多</button>
+</div>
+<button class="fab" id="fab" onclick="togQ()">+</button>
+<div class="qm" id="qm">
+<button class="qi" onclick='opM("site")'>🏠 添加站点</button>
+<button class="qi" onclick='opM("rc")'>💳 记录充值</button>
+<button class="qi" onclick='opM("pr")'>🏷️ 添加价格</button>
+</div>
+<div class="mo" id="m-site">
+<div class="ml">
+<div class="mh">
+</div>
+<div class="mhd">
+<h2 id="mst">添加站点</h2>
+<button class="mc" onclick='clM("m-site")'>×</button>
+</div>
+<div class="fg">
+<label class="fl">站点名称</label>
+<input id="sn">
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">Emoji</label>
+<input id="se" maxlength="4">
+</div>
+<div class="fg">
+<label class="fl">分组</label>
+<select id="sg">
+<option value="other">默认</option>
+<option value="A">A组</option>
+<option value="B">B组</option>
+<option value="C">C组</option>
+<option value="D">D组</option>
+<option value="E">E组</option>
+<option value="F">F组</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">汇率</label>
+<input type="number" id="sr" value="1" step="any">
+<div class="fh">
+</div>
+</div>
+<div class="fg">
+<label class="fl">换算类型</label>
+<select id="sbt">
+<option value="yuanToQuota">1R：额</option>
+<option value="quotaToYuan">R：1额</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">当前余额</label>
+<input type="number" id="sb" step="any">
+</div>
+<div class="fg">
+<label class="fl">余额单位</label>
+<select id="sbu">
+<option value="yuan">¥</option>
+<option value="usd">$</option>
+<option value="quota">额度</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">历史调用</label>
+<input type="number" id="sc">
+</div>
+<div class="fg">
+<label class="fl">历史消耗</label>
+<input type="number" id="stc" step="any">
+</div>
+</div>
+<input type="hidden" id="scu" value="same">
+<div class="fg">
+<label class="fl">入坑时间</label>
+<input type="date" id="ssd">
+</div>
+<div class="fg">
+<label class="fl">备注</label>
+<input id="sno">
+</div>
+<input type="hidden" id="sid">
+<div class="row" style="margin-top:6px">
+<button class="btn bd bs" id="sdl" style="display:none" onclick="dlSite()">删除</button>
+<button class="btn bp bb" onclick="svSite()">保存</button>
+</div>
+</div>
+</div>
+<div class="mo" id="m-rc">
+<div class="ml">
+<div class="mh">
+</div>
+<div class="mhd">
+<h2 id="mrt">记录充值</h2>
+<button class="mc" onclick='clM("m-rc")'>×</button>
+</div>
+<div class="fg">
+<label class="fl">站点</label>
+<select id="rs">
+</select>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">金额(¥)</label>
+<input type="number" id="ra" step="any">
+</div>
+<div class="fg">
+<label class="fl">日期</label>
+<input type="date" id="rd">
+</div>
+</div>
+<div class="fg">
+<label class="cl">
+<input type="checkbox" id="rrf"> 退款</label>
+</div>
+<div class="fg">
+<label class="fl">备注</label>
+<input id="rn">
+</div>
+<input type="hidden" id="rid">
+<div class="row" style="margin-top:6px">
+<button class="btn bd bs" id="rdl" style="display:none" onclick="dlRc()">删除</button>
+<button class="btn bp bb" onclick="svRc()">保存</button>
+</div>
+</div>
+</div>
+<div class="mo" id="m-pr">
+<div class="ml">
+<div class="mh">
+</div>
+<div class="mhd">
+<h2 id="mpt">添加价格</h2>
+<button class="mc" onclick='clM("m-pr")'>×</button>
+</div>
+<div class="fg">
+<label class="fl">计费方式</label>
+<select id="pty" onchange="togPF()">
+<option value="per-call">按次</option>
+<option value="per-token">按量</option>
+</select>
+</div>
+<div class="fg">
+<label class="fl">站点</label>
+<select id="ps" onchange="syncPrModel('mul')">
+</select>
+</div>
+<div class="fg">
+<label class="fl">渠道名</label>
+<div class="row">
+<input id="pch" placeholder="请输入" oninput="pchSyncSel()">
+<select id="pchSel" onchange="pchPick()">
+</select>
+</div>
+</div>
+<div class="fg">
+<label class="fl">模型</label>
+<select id="pmo" onchange="syncPrModel('model')">
+</select>
+</div>
+<div id="pfc">
+<div class="row">
+<div class="fg">
+<label class="fl">每次价格</label>
+<input type="number" id="ppc" step="any">
+</div>
+<div class="fg">
+<label class="fl">价格单位</label>
+<select id="ppu">
+<option value="yuan">¥</option>
+<option value="usd">$</option>
+<option value="quota">额度</option>
+</select>
+</div>
+</div>
+</div>
+<div id="pft" style="display:none">
+<div class="row">
+<div class="fg">
+<label class="fl">输入价(额度/M)</label>
+<input type="number" id="pin" step="any" oninput="syncPrModel('price')">
+</div>
+<div class="fg">
+<label class="fl">输出价(额度/M)</label>
+<input type="number" id="pou" step="any" oninput="syncPrModel('price')">
+</div>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">官方输入价(/M)</label>
+<input type="number" id="poffIn" step="any" value="5" oninput="syncPrModel('price')">
+</div>
+<div class="fg">
+<label class="fl">官方输出价(/M)</label>
+<input type="number" id="poffOut" step="any" value="25" oninput="syncPrModel('price')">
+</div>
+</div>
+<div class="fg">
+<label class="fl">倍率</label>
+<input type="number" id="pmul" step="any" min="0" oninput="syncPrModel('mul')">
+</div>
+<div class="fg">
+<label class="fl">价格单位</label>
+<select id="ptu">
+<option value="yuan">¥</option>
+<option value="usd">$</option>
+<option value="quota">额度</option>
+</select>
+</div>
+<div class="fg">
+<label class="cl">
+<input type="checkbox" id="pcac"> 带缓存</label>
+</div>
+</div>
+<div class="fg">
+<label class="fl">分档</label>
+<select id="pti">
+<option value="">其他</option>
+<option value="🥇">🥇性价比</option>
+<option value="🥈">🥈平价</option>
+<option value="🥉">🥉小贵</option>
+<option value="💸">💸贵</option>
+</select>
+</div>
+<div class="fg">
+<label class="fl">备注</label>
+<input id="pno">
+</div>
+<input type="hidden" id="pid">
+<div class="row" style="margin-top:6px">
+<button class="btn bd bs" id="pdl" style="display:none" onclick="dlPr()">删除</button>
+<button class="btn bp bb" onclick="svPr()">保存</button>
+</div>
+</div>
+</div>
+<div class="mo" id="m-ck">
+<div class="ml">
+<div class="mh">
+</div>
+<div class="mhd">
+<h2>添加签到</h2>
+<button class="mc" onclick='clM("m-ck")'>×</button>
+</div>
+<div class="fg">
+<label class="fl">站点</label>
+<select id="cks">
+</select>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">最小收益</label>
+<input type="number" id="ckn" step="any">
+</div>
+<div class="fg">
+<label class="fl">最大收益</label>
+<input type="number" id="ckx" step="any">
+</div>
+</div>
+<div class="fg">
+<label class="fl">收益单位</label>
+<select id="cku">
+<option value="yuan">¥</option>
+<option value="usd">$</option>
+<option value="quota">额度</option>
+</select>
+</div>
+  <div class="fg">
+  <label class="fl">备注</label>
+    <input id="ckno">
+    </div>
+<input type="hidden" id="ckid">
+<div class="row" style="margin-top:6px">
+<button class="btn bd bs" id="ckdl" style="display:none" onclick="dlCk()">删除</button>
+<button class="btn bp bb" onclick="svCk()">保存</button>
+</div>
+</div>
+</div>
+<div class="mo" id="m-iv">
+<div class="ml">
+<div class="mh">
+</div>
+<div class="mhd">
+<h2 id="mit">添加邀请赠金</h2>
+<button class="mc" onclick='clM("m-iv")'>×</button>
+</div>
+<div class="fg">
+<label class="fl">类型</label>
+<select id="itp" onchange="togIE()">
+<option value="promo">推广赠金</option>
+<option value="invite">邀请奖励</option>
+</select>
+</div>
+<div class="fg">
+<label class="fl">站点</label>
+<select id="is">
+</select>
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">金额/额度</label>
+<input type="number" id="ia" step="any">
+</div>
+<div class="fg">
+<label class="fl">单位</label>
+<select id="iu">
+<option value="yuan">¥</option>
+<option value="usd">$</option>
+<option value="quota">额度</option>
+</select>
+</div>
+</div>
+<div id="iex">
+<div class="row">
+<div class="fg">
+<label class="fl">邀请人数</label>
+<input type="number" id="ic">
+</div>
+<div class="fg">
+<label class="fl">小号数</label>
+<input type="number" id="ial">
+</div>
+</div>
+</div>
+<div class="fg">
+<label class="fl">排名</label>
+<select id="irk">
+<option value="">无</option>
+<option value="🥇">🥇</option>
+<option value="🥈">🥈</option>
+<option value="🥉">🥉</option>
+</select>
+</div>
+<div class="fg">
+<label class="fl">备注</label>
+<input id="ino">
+</div>
+<input type="hidden" id="iid">
+<div class="row" style="margin-top:6px">
+<button class="btn bd bs" id="idl" style="display:none" onclick="dlIv()">删除</button>
+<button class="btn bp bb" onclick="svIv()">保存</button>
+</div>
+</div>
+</div>
+<div class="mo" id="m-fl">
+<div class="ml">
+<div class="mh">
+</div>
+<div class="mhd">
+<h2>添加食用日志</h2>
+<button class="mc" onclick='clM("m-fl")'>×</button>
+</div>
+<div class="fg">
+<label class="fl">Emoji</label>
+<input id="fe" maxlength="4">
+</div>
+<div class="row">
+<div class="fg">
+<label class="fl">开始</label>
+<input type="date" id="fs">
+</div>
+<div class="fg">
+<label class="fl">结束</label>
+<input type="date" id="fn">
+</div>
+</div>
+<div class="fg">
+<label class="fl">内容</label>
+<textarea id="fc">
+</textarea>
+</div>
+<div class="fg">
+<label class="fl">单次成本</label>
+<input id="fco">
+</div>
+<input type="hidden" id="fid">
+<div class="row" style="margin-top:6px">
+<button class="btn bd bs" id="fdl" style="display:none" onclick="dlFl()">删除</button>
+<button class="btn bp bb" onclick="svFl()">保存</button>
+</div>
+</div>
+</div>
+<div class="co" id="cfd">
+<div class="cb">
+<p id="cfm">确认？</p>
+<div class="cbs">
+<button class="btn bg" onclick="cfN()">取消</button>
+<button class="btn bd" onclick="cfY()">确认</button>
+</div>
+</div>
+  </div>
