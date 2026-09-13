@@ -1,8 +1,4 @@
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>API记账本</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box}
 :root{--t:.25s}
 body,html{-webkit-tap-highlight-color:transparent}
 .cki,.fab,.ii,.li,.pr,.qi,.ri,.si,.tb,button,summary{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
@@ -141,5 +137,3 @@ textarea{resize:vertical;min-height:50px}
 .cmlist .pr .cm-del{width:auto;flex:0 0 auto;padding:6px 12px}
 @media(max-width:520px){.cmgrid{grid-template-columns:1fr}
 }
-</style>
-</head>
