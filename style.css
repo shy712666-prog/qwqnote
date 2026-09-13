@@ -1,3 +1,7 @@
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>API记账本</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}
 :root{--t:.25s}
 body,html{-webkit-tap-highlight-color:transparent}
@@ -138,3 +142,4 @@ textarea{resize:vertical;min-height:50px}
 @media(max-width:520px){.cmgrid{grid-template-columns:1fr}
 }
 </style>
+</head>
