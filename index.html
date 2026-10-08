@@ -237,7 +237,7 @@ textarea{resize:vertical;min-height:50px}
 </div>
 <div class="row" style="margin-bottom:10px">
 <div class="fg" style="margin:0">
-<input type="number" id="qcf" step="any" value="0.3" oninput="qTok()" placeholder="缓存输入价倍率">
+<input type="number" id="qcf" step="any" value="0.25" oninput="qTok()" placeholder="缓存输入价倍率">
 </div>
 <div class="fg" style="margin:0">
 <button class="btn bg bb" id="qcacheBtn" onclick="qTogCache()">缓存：OFF</button>
@@ -249,11 +249,11 @@ textarea{resize:vertical;min-height:50px}
 <div class="row">
 <div class="fg">
 <label class="fl">提示词(k)</label>
-<input type="number" id="qcp" step="any" value="6" oninput="qTok()">
+<input type="number" id="qcp" step="any" value="7" oninput="qTok()">
 </div>
 <div class="fg">
 <label class="fl">累计上下文(k)</label>
-<input type="number" id="qcap" step="any" value="30" oninput="qSetDriver('cap')">
+<input type="number" id="qcap" step="any"  oninput="qSetDriver('cap')">
 </div>
 </div>
 <div class="row">
@@ -273,7 +273,7 @@ textarea{resize:vertical;min-height:50px}
 </div>
 <div class="fg">
 <label class="fl">预期轮数</label>
-<input type="number" id="qrounds" step="any" min="1" oninput="qSetDriver('rounds')">
+<input type="number" id="qrounds" step="any" min="1" value="30" oninput="qSetDriver('rounds')">
 </div>
 </div>
 </div>
