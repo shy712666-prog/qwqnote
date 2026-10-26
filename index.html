@@ -796,14 +796,6 @@ textarea{resize:vertical;min-height:50px}
 <button class="mc" onclick='clM("m-iv")'>×</button>
 </div>
 <div class="fg">
-<label class="fl">类型</label>
-<select id="itp" onchange="togIE()">
-<option value="promo">推广赠金</option>
-<option value="invite">邀请奖励</option>
-<option value="lottery">中奖记录</option>
-</select>
-</div>
-<div class="fg">
 <label class="fl">站点</label>
 <select id="is">
 </select>
@@ -835,13 +827,14 @@ textarea{resize:vertical;min-height:50px}
 </div>
 </div>
 <div class="fg">
-<label class="fl">排名</label>
+<label class="fl" id="ivrkl">排名</label>
 <select id="irk">
 <option value="">无</option>
 <option value="🥇">🥇</option>
 <option value="🥈">🥈</option>
 <option value="🥉">🥉</option>
 </select>
+<input type="date" id="idt" style="display:none">
 </div>
   
 <div class="fg">
@@ -1116,9 +1109,9 @@ function svCk(){const t=$("cks").value;if(!t)return alert("请选择站点");con
 function dlCk(){const t=$("ckid").value;showCf("删除签到记录？",()=>{CK=CK.filter(e=>e.id!==t),sa(),clM("m-ck"),rAll()})}let curIT="invite",ivFFold="1"===localStorage.getItem("ivFFold");
 function togIvFGroup(){ivFFold=!ivFFold,localStorage.setItem("ivFFold",ivFFold?"1":"0"),rIv()}
 function switchIT(t){curIT=t,document.querySelectorAll(".itb").forEach(e=>{const n=e.dataset.type===t;e.classList.toggle("on",n),e.style.background=n?"var(--ac)":"",e.style.color=n?"#fff":"",e.style.borderColor=n?"var(--ac)":""}),rIv()}
-function togIE(){$("iex").style.display="invite"===$("itp").value?"":"none"}
-function opIv(t){const e=!!t;$("mit").textContent=e?"编辑邀请赠金":"添加邀请赠金",$("idl").style.display=e?"":"none";const n=e?IV.find(e=>e.id===t):null;sOpt("is",!1,n?.siteId),e&&n?($("itp").value=n.type||"promo",$("is").value=n.siteId,$("ia").value=n.amount||"",$("iu").value=n.unit||"yuan",$("ic").value=n.count||"",$("ial").value=n.alts||"",$("irk").value=n.rank||"",$("ino").value=n.note||"",$("iid").value=t):(["ia","ic","ial","ino"].forEach(t=>$(t).value=""),$("itp").value=curIT||"promo",$("iu").value="yuan",$("irk").value="",$("iid").value=""),togIE(),opMo("m-iv")}
-function svIv(){const t=$("is").value,e=$("ia").value;if(!t||!e)return alert("请填写站点和金额");const n={type:$("itp").value,siteId:t,amount:parseFloat(e),unit:$("iu").value,count:parseInt($("ic").value)||0,alts:parseInt($("ial").value)||0,rank:$("irk").value,note:$("ino").value.trim(),claimed:true},l=$("iid").value;if(l){const t=IV.findIndex(t=>t.id===l);t>=0&&(IV[t]={...IV[t],...n})}else IV.push({id:gid(),...n});sa(),clM("m-iv"),rAll()}
+function togIE(){const v="invite"===curIT;$("iex").style.display=v?"":"none";$("irk").style.display=v?"":"none";$("idt").style.display=v?"none":"";$("ivrkl").textContent=v?"排名":"日期"}
+function opIv(t){const e=!!t;$("idl").style.display=e?"":"none";const n=e?IV.find(e=>e.id===t):null;sOpt("is",!1,n?.siteId);if(e&&n){curIT=n.type||"promo",$("is").value=n.siteId,$("ia").value=n.amount||"",$("iu").value=n.unit||"yuan",$("ic").value=n.count||"",$("ial").value=n.alts||"","invite"===curIT?$("irk").value=n.rank||"":$("idt").value=n.rank||"",$("ino").value=n.note||"",$("iid").value=t}else{["ia","ic","ial","ino"].forEach(t=>$(t).value=""),$("iu").value="yuan",$("irk").value="",$("idt").value="",$("iid").value=""}$("mit").textContent="promo"===curIT?"推广赠金":"lottery"===curIT?"中奖记录":"邀请奖励";togIE(),opMo("m-iv")}
+function svIv(){const t=$("is").value,e=$("ia").value;if(!t||!e)return alert("请填写站点和金额");const n={type:curIT,siteId:t,amount:parseFloat(e),unit:$("iu").value,count:parseInt($("ic").value)||0,alts:parseInt($("ial").value)||0,rank:"invite"===curIT?$("irk").value:$("idt").value,note:$("ino").value.trim(),claimed:true},l=$("iid").value;if(l){const t=IV.findIndex(t=>t.id===l);t>=0&&(IV[t]={...IV[t],...n})}else IV.push({id:gid(),...n});sa(),clM("m-iv"),rAll()}
 function dlIv(){const t=$("iid").value;showCf("删除记录？",()=>{IV=IV.filter(e=>e.id!==t),sa(),clM("m-iv"),rAll()})}
 function dlFl(t){t&&(t.preventDefault(),t.stopPropagation());const e=$("fid").value;showCf("删除日志？",()=>{F=F.filter(t=>t.id!==e),sa(),clM("m-fl"),rAll()})}
 function opFl(t){const e=!!t;if($("fdl").style.display=e?"":"none",e){const e=F.find(e=>e.id===t);$("fe").value=e.emoji||"",$("fs").value=e.start||"",$("fn").value=e.end||"",$("fc").value=e.content||"",$("fco").value=e.cost||"",$("fid").value=t}else["fe","fc","fco"].forEach(t=>$(t).value=""),$("fs").value=td(),$("fn").value="",$("fid").value="";opMo("m-fl")}let flPg=1,flPs=5;
